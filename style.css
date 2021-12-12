@@ -112,8 +112,8 @@ input {
 }
 
 .Col3 {
-  float: left;
-  width: 20%;
+  float: right;
+  width: 25%;
   padding: 10px;
   /* height: 300px; Should be removed. Only for demonstration */
 }
@@ -162,7 +162,26 @@ input {
   border-radius: var(--border-radius);
   border: solid 1px rgba(0, 0, 0, 0.25);
   /* display: flex; */
-  /* justify-content: center;  */
+  /* justify-content: center;
+  /* width: 440px;
+  max-width: 1440px;
+  transition: box-shadow 250ms ease;
+  */
+}
+
+
+.LoginContainer {
+  margin-top: 10px;
+  padding: 1rem 2rem;
+  background-color:white;
+  border-radius: var(--border-radius);
+  border: solid 1px rgba(0, 0, 0, 0.25);
+  width:30%;
+  margin:auto;
+  transition: box-shadow 250ms ease;
+  margin-top: 10px;
+  /* display: flex; */
+  /* justify-content: center;
   /* width: 440px;
   max-width: 1440px;
   transition: box-shadow 250ms ease;

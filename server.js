@@ -44,6 +44,12 @@ app.get(["/orderForm"],(req,res)=>{
     res.render("./pages/orderform",{order:true})
 })
 
+app.get('/login',(req,res)=>{
+    res.statusCode = 200;
+    res.setHeader('Content-Type','text/html');
+    res.render("./pages/login",{login:true})
+})
+
 app.put('/order',(request,response)=>{
     //send info
     response.setHeader("Content-Type","application/JSON");

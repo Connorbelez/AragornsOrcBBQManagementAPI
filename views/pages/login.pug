@@ -1,0 +1,16 @@
+html
+    head
+        title My Home Page 
+        style 
+            include ../../style.css
+body
+    div
+        include ../partials/header.pug
+
+    div.LoginContainer
+        div.orderC
+            label UserName: 
+            input(type="text" name="userName" placeholder="user name" id="userName")
+        div.orderC
+            label Password: 
+            input(type="password" name="passWord" placeholder="SuperSecretPW" id="PW")
