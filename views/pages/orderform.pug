@@ -1,0 +1,45 @@
+html
+    head 
+        title Order Form 
+        style 
+            include ../../style.css
+
+div.header(header)
+    img.logo(src="../../images/prancingpony.jpg")
+
+    
+    div.header-right
+        
+        if home
+            a.active(href="/") Home
+        else 
+            a(href="/") Home
+        |
+        |
+        |
+        |
+        if users 
+            a.active(href="/users") Users
+        else
+            a(href="/users") User 
+        |
+        |
+        |
+        |
+        if order
+            a.active(href="/orderForm") Order
+        else 
+            a(href="/orderForm") Order
+        |
+        |
+        |
+        |
+        if profile
+            a.active(href="/user-profile") My Profile
+        else 
+            a(href="/user-profile") My Profile
+
+        
+        
+body
+    include ../../public/orderForm.html
