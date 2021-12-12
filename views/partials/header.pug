@@ -18,21 +18,28 @@ div.header(header)
         if users 
             a.active(href="/users") Users
         else
-            a(href="/users") User 
+            a(href="/users") Users 
         |
         |
         |
         |
-        if order
-            a.active(href="/orderForm") Order
+        if loggedin
+            if order
+                a.active(href="/orderForm") Order
+            else 
+                a(href="/orderForm") Order
+        |
+        |
+        |
+        |
+        if loggedin
+            if profile
+                a.active(href="/user-profile") My Profile
+            else 
+                a(href="/user-profile") My Profile
         else 
-            a(href="/orderForm") Order
-        |
-        |
-        |
-        |
-        if profile
-            a.active(href="/user-profile") My Profile
-        else 
-            a(href="/user-profile") My Profile
+            if login
+                a.active(href="/login") Login or Register
+            else 
+                a(href="/login") Login or Register
 

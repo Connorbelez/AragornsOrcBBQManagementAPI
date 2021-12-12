@@ -9,7 +9,6 @@ div.header(header)
 
     
     div.header-right
-        
         if home
             a.active(href="/") Home
         else 
@@ -21,7 +20,7 @@ div.header(header)
         if users 
             a.active(href="/users") Users
         else
-            a(href="/users") User 
+            a(href="/users") Users 
         |
         |
         |
@@ -34,10 +33,17 @@ div.header(header)
         |
         |
         |
-        if profile
-            a.active(href="/user-profile") My Profile
+        if loggedin
+            if profile
+                a.active(href="/user-profile") My Profile
+            else 
+                a(href="/user-profile") My Profile
         else 
-            a(href="/user-profile") My Profile
+            if login
+                a.active(href="/login") Login or Register
+            else 
+                a(href="/login") Login or Register
+
 
         
         

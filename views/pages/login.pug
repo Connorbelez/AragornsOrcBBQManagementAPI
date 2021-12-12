@@ -8,9 +8,21 @@ body
         include ../partials/header.pug
 
     div.LoginContainer
+        h3 Existing Users:
         div.orderC
             label UserName: 
             input(type="text" name="userName" placeholder="user name" id="userName")
         div.orderC
             label Password: 
             input(type="password" name="passWord" placeholder="SuperSecretPW" id="PW")
+        button(type="button" class="myBtn" id="LoginBtn") Login
+
+    div.LoginContainer
+        h3 Register:
+        div.orderC
+            label UserName: 
+            input(type="text" name="userName" placeholder="user name" id="userNameRegister")
+        div.orderC
+            label Password: 
+            input(type="password" name="passWord" placeholder="SuperSecretPW" id="PWRegister")
+        button(type="button" class="myBtn" id="RegisterBtn") Register

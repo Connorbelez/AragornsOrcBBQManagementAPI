@@ -22,7 +22,10 @@ const express = require('express');
 const pug = require('pug');
 const fs = require('fs');
 const { send } = require('process');
+const session = require('express-session');
 let app = express();
+
+app.use(session({secret:"some secret here"}))
 
 
 
@@ -35,13 +38,17 @@ app.use(express.json());
 app.get(['/','/home'],(req, res)=>{
     res.statusCode = 200;
     res.setHeader('Content-Type','text/html');
-    res.render("./pages/home",{home:true}) //also send true of false if the user is logged in or not
+    // req.session.LoggedIn = true; // use this line in the login page
+    console.log("Logged in: "+ req.session.LoggedIn);
+    res.render("./pages/home",{home:true,loggedin:req.session.LoggedIn}) //also send true of false if the user is logged in or not
 })
 
 app.get(["/orderForm"],(req,res)=>{
     res.statusCode = 200;
     res.setHeader('Content-Type','text/html');
-    res.render("./pages/orderform",{order:true})
+    // req.session.LoggedIn = true; // Use this line in the login page
+    console.log("Logged in: "+ req.session.LoggedIn);
+    res.render("./pages/orderform",{order:true,loggedin:req.session.LoggedIn})
 })
 
 app.get('/login',(req,res)=>{
@@ -49,6 +56,15 @@ app.get('/login',(req,res)=>{
     res.setHeader('Content-Type','text/html');
     res.render("./pages/login",{login:true})
 })
+
+
+
+
+
+
+
+
+
 
 app.put('/order',(request,response)=>{
     //send info
@@ -91,6 +107,9 @@ app.get('/list',(request,response)=>{
 })
 
 // app.put()
+
+
+
 
 
 

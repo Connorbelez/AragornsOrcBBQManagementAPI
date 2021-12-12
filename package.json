@@ -9,6 +9,7 @@
   "author": "Connor Beleznay",
   "license": "ISC",
   "dependencies": {
+    "express-session": "^1.17.2",
     "mongodb": "^4.2.1"
   }
 }
