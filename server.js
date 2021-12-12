@@ -148,6 +148,7 @@ app.put('/login',(request,response)=>{
             console.log("Loggin successful!");
             response.status(200);
             request.session.LoggedIn = true; // use this line in the login page
+            request.sesion.userName = UserName;
             response.end()
         }else{
             console.log("Incorrect PW:");
@@ -164,8 +165,8 @@ app.put('/login',(request,response)=>{
 })
 
 app.put('/register',(req,res)=>{
-    let UserName = request.body.username;
-    let pw = request.body.password;
+    let UserName = req.body.username;
+    let pw = req.body.password;
 
     db.collection("users").findOne({username:UserName},(err,result)=>{
         if(err) throw err;
@@ -180,10 +181,18 @@ app.put('/register',(req,res)=>{
                 password:pw,
                 privacy:false
             };
-            db.collection("users").insterOne(newUser)
+            db.collection("users").insertOne(newUser,(err,result)=>{
+                if (err) throw err;
+                req.session.LoggedIn = true;
+                req.session.username = UserName;
+
+                console.log("1 document inserted");
+                res.status(200);
+                res.end();
+            })
 
             
-
+            
 
         }
     });
