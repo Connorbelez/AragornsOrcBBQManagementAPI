@@ -23,11 +23,49 @@ const pug = require('pug');
 const fs = require('fs');
 const { send } = require('process');
 const session = require('express-session');
+const mongoose = require('mongoose');
+const res = require('express/lib/response');
+const MongoDBStore = require('connect-mongodb-session')(session);
+const dbfile = require("./database-initializer.js");
 let app = express();
 
-app.use(session({secret:"some secret here"}))
+let mongo = require('mongodb');
+const e = require('express');
+let MongoClient = mongo.MongoClient;
+let db;
 
 
+MongoClient.connect("mongodb://localhost:27017/", function(err, client) {
+  if(err) throw err;	
+  db = client.db('a4');
+});
+
+
+
+
+let mongoStore = new MongoDBStore({
+    uri: 'mongodb://localhost:27017/connect_mongodb_session_test',
+    collection: 'mySessions'
+  });
+
+app.use(session({secret:"some secret here",store:mongoStore}));
+
+// app.use(session({secret:"some secret here"}))
+
+
+// const userSchema = new mongoose.Schema({
+//     userName: String,
+//     password: String, 
+//     orders: Map,
+//     private: Boolean
+// });
+
+// const Users = mongoose.model('Users',userSchema)
+
+// let map1 = new Map();
+// const admin = new Users({userName:"Connor",password:"123",orders:map1,private:false});
+
+// admin.save();
 
 app.use(express.static("public"));
 app.set('view engine','pug')
@@ -52,6 +90,9 @@ app.get(["/orderForm"],(req,res)=>{
 })
 
 app.get('/login',(req,res)=>{
+
+
+
     res.statusCode = 200;
     res.setHeader('Content-Type','text/html');
     res.render("./pages/login",{login:true})
@@ -69,11 +110,7 @@ app.get('/login',(req,res)=>{
 app.put('/order',(request,response)=>{
     //send info
     response.setHeader("Content-Type","application/JSON");
-    // console.log("GER GERSFGDSDFGSFDGS");
-    // console.log(JSON.stringify(restDataBase));
-    // restDataBase.forEach(rest => {
-    //     restNames.push(rest.name);
-    // });
+
     let name = request.body
     console.log("recieved::::",name);
     let currest = restDataBase[name.selection];
@@ -81,21 +118,6 @@ app.put('/order',(request,response)=>{
     response.end();
 
 
-    // request.on('data',chunk=>{
-    //     data += chunk;
-    // });
-
-    // request.on("end",()=>{
-    //     let name = JSON.parse(data);
-    //     console.log("recieved::::",name);
-    //     let currest = restDataBase[name.selection];
-    //     response.write(JSON.stringify(currest));
-    //     response.end();
-
-    // });
-
-    // response.write(JSON.stringify(data));
-    // response.end();
 })
 
 app.get('/list',(request,response)=>{
@@ -106,9 +128,68 @@ app.get('/list',(request,response)=>{
     response.end();
 })
 
-// app.put()
+app.put('/login',(request,response)=>{
+    let UserName = request.body.username;
+    let pw = request.body.password;
 
 
+    db.collection("users").findOne({username:UserName},(err,result)=>{
+        if(err) throw err;
+
+        if(!result){
+            console.log("No users mathing:"+ UserName + pw);
+            //Send login unsucessful message back to client
+            response.status(401);
+            response.end();
+            return;
+        }
+
+        if(pw === result.password){
+            console.log("Loggin successful!");
+            response.status(200);
+            request.session.LoggedIn = true; // use this line in the login page
+            response.end()
+        }else{
+            console.log("Incorrect PW:");
+            console.log("Username Entered: " + UserName);
+            console.log("pw  entered: " + pw);
+            console.log("Username ONFILE: " + result.username);
+            console.log("pw ONFILE: " + result.password);
+            //Send login unsucessful message back to client
+            response.status(401);
+            response.end()
+        }
+    })
+
+})
+
+app.put('/register',(req,res)=>{
+    let UserName = request.body.username;
+    let pw = request.body.password;
+
+    db.collection("users").findOne({username:UserName},(err,result)=>{
+        if(err) throw err;
+
+        if(result){
+            console.log("USER ALREADY EXISTS");
+            res.status(401);
+            res.end;
+        }else{
+            let newUser = {
+                username:UserName,
+                password:pw,
+                privacy:false
+            };
+            db.collection("users").insterOne(newUser)
+
+            
+
+
+        }
+    });
+
+
+})
 
 
 
@@ -148,7 +229,7 @@ fs.readdir("./DB",(err,files) => {
     }
 
     app.listen(3000);
-    console.log("Server listening at http://localhost:3000");
+    console.log("Server listening at http://127.0.0.1:3000");
 
     console.log(restNames);
 });

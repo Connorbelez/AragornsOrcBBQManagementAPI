@@ -4,6 +4,7 @@ html
         style 
             include ../../style.css
 body
+    script(src='client.js')
     div
         include ../partials/header.pug
 
@@ -15,7 +16,7 @@ body
         div.orderC
             label Password: 
             input(type="password" name="passWord" placeholder="SuperSecretPW" id="PW")
-        button(type="button" class="myBtn" id="LoginBtn") Login
+        button(type="button" class="myBtn" id="LoginBtn" onclick="login()") Login
 
     div.LoginContainer
         h3 Register:
@@ -25,4 +26,4 @@ body
         div.orderC
             label Password: 
             input(type="password" name="passWord" placeholder="SuperSecretPW" id="PWRegister")
-        button(type="button" class="myBtn" id="RegisterBtn") Register
+        button(type="button" class="myBtn" id="RegisterBtn" onclick="register()") Register
