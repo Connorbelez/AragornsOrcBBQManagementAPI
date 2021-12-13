@@ -598,3 +598,17 @@ function onLoad(){
 	// render();
 
 }
+
+
+
+function logout(){
+    let req = new XMLHttpRequest();
+    req.onreadystatechange = function() {
+        if(req.readyState=== 4 && this.status === 200){
+            alert("Logged out successfully");
+            window.location.href = "http://127.0.0.1:3000/"
+        }
+    }
+    req.open("GET",'/logout');
+    req.send();
+}

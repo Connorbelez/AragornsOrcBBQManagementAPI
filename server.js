@@ -148,14 +148,12 @@ app.put('/login',(request,response)=>{
             console.log("Loggin successful!");
             response.status(200);
             request.session.LoggedIn = true; // use this line in the login page
-            request.sesion.userName = UserName;
+            request.session.username = UserName;
+            request.session.id = result._id;
+
+            console.log("1 document inserted with ID:"+newUser._id);
             response.end()
         }else{
-            console.log("Incorrect PW:");
-            console.log("Username Entered: " + UserName);
-            console.log("pw  entered: " + pw);
-            console.log("Username ONFILE: " + result.username);
-            console.log("pw ONFILE: " + result.password);
             //Send login unsucessful message back to client
             response.status(401);
             response.end()
@@ -179,14 +177,14 @@ app.put('/register',(req,res)=>{
             let newUser = {
                 username:UserName,
                 password:pw,
-                privacy:false
+                privacy:false,
             };
             db.collection("users").insertOne(newUser,(err,result)=>{
                 if (err) throw err;
                 req.session.LoggedIn = true;
-                req.session.username = UserName;
+                req.session.id = newUser._id;
 
-                console.log("1 document inserted");
+                console.log("1 document inserted with ID:"+newUser._id);
                 res.status(200);
                 res.end();
             })
@@ -199,7 +197,41 @@ app.put('/register',(req,res)=>{
 
 
 })
+app.get('/users', (req,res)=>{
+    res.statusCode = 200;
+    res.setHeader('Content-Type','text/html');
+    // req.session.LoggedIn = true; // use this line in the login page
 
+    res.render("./pages/users",{users:true,loggedin:req.session.LoggedIn});
+});
+
+app.get('/logout',(req,res)=>{
+
+    req.session.LoggedIn = false;
+    req.session.id = null;
+
+    console.log("LOGGED OUT");
+    res.end();
+});
+
+
+app.put('/search', function(req, res){
+    let query = req.body.username;
+    db.collection("users").find({username:{'$regex':query,'$options':'i' } }).toArray(function(err,result){
+        if(result.length >0){
+        console.log("FOUND THE FOLLOWING:"+result[0].username+result[0]._id);
+        res.setHeader('Content-Type','text/html');
+        res.render("./pages/userResults",{results:result});
+        console.log("FOUND THE FOLLOWING: 2"+result[0].username+result[0]._id);
+        }
+
+    });
+
+
+
+
+
+})
 
 
 

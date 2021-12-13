@@ -1,0 +1,16 @@
+html
+    head
+        title My Home Page 
+        style 
+            include ../../style.css
+body
+    script(src='client.js')
+    div
+        include ../partials/header.pug
+
+    div.LoginContainer
+        h3 Search a users:
+        div.orderC
+            label UserName: 
+            input(type="text" name="userSearch" placeholder="user name" id="userSearch")
+        button(class="myBtn" onclick="search()") Search

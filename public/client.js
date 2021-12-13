@@ -68,3 +68,31 @@ function register(){
         alert("Please enter your username and password");
     }
 }
+
+function logout(){
+    let req = new XMLHttpRequest();
+    req.onreadystatechange = function() {
+        if(req.readyState=== 4 && this.status === 200){
+            alert("Logged out successfully");
+            window.location.href = "http://127.0.0.1:3000/"
+        }
+    }
+    req.open("GET",'/logout');
+    req.send();
+}
+
+function search() {
+    let searchObj = {
+        username: document.getElementById("userSearch").value
+    }
+
+    let req = new XMLHttpRequest();
+    req.onreadystatechange = function() {
+        if(req.readyState=== 4 && this.status === 200){
+            console.log("Search response recieved");
+        }
+    }
+    req.open("PUT",'/search');
+    req.setRequestHeader('Content-Type','application/JSON');
+    req.send(JSON.stringify(searchObj));
+}

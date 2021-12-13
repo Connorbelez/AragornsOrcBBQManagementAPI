@@ -1,0 +1,13 @@
+html
+    head
+        title My Home Page 
+        style 
+            include ../../style.css
+body
+    script(src='client.js')
+    div
+        include ../partials/header.pug
+
+    div.LoginContainer
+        each val in results
+            h3 #{val.username}
