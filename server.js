@@ -151,7 +151,7 @@ app.put('/login',(request,response)=>{
             request.session.username = UserName;
             request.session.id = result._id;
 
-            console.log("1 document inserted with ID:"+newUser._id);
+            // console.log("1 document inserted with ID:"+newUser._id);
             response.end()
         }else{
             //Send login unsucessful message back to client
@@ -201,7 +201,7 @@ app.get('/users', (req,res)=>{
     res.statusCode = 200;
     res.setHeader('Content-Type','text/html');
     // req.session.LoggedIn = true; // use this line in the login page
-
+    console.log("LOGGED IN?"+req.session.LoggedIn);
     res.render("./pages/users",{users:true,loggedin:req.session.LoggedIn});
 });
 
@@ -220,8 +220,8 @@ function handleSearch(req, res){
     db.collection("users").find({username:{'$regex':userName,'$options':'i' } }).toArray(function(err,result){
         if(err) throw err;
 
-        console.log("FOUND THE FOLLOWING:"+result[0].username+result[0]._id);
-        res.status(200).render("./pages/userResult",{results:result});
+        // console.log("FOUND THE FOLLOWING:"+result[0].username+result[0]._id);
+        res.status(200).render("./pages/userResult",{results:result,loggedin:req.session.LoggedIn});
 
 
 

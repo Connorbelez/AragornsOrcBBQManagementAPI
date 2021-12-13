@@ -3,10 +3,57 @@ html
         title My Home Page 
         style 
             include ../../style.css
+div.header(header)
+    img.logo(src="../../images/prancingpony.jpg")
+    script(src="client.js")
+    
+    div.header-right
+        
+        if home
+            a.active(href="/") Home
+        else 
+            a(href="/") Home
+        |
+        |
+        |
+        |
+        if users 
+            a.active(href="/users") Users
+        else
+            a(href="/users") Users 
+        |
+        |
+        |
+        |
+        if loggedin
+            if order
+                a.active(href="/orderForm") Order
+            else 
+                a(href="/orderForm") Order
+        |
+        |
+        |
+        |
+        if loggedin
+            if profile
+                a.active(href="/user-profile") My Profile
+            else 
+                a(href="/user-profile") My Profile
+        else 
+            if login
+                a.active(href="/login") Login or Register
+            else 
+                a(href="/login") Login or Register
+        if loggedin
+            |
+            |
+            |
+            |
+            button(class="myBtn" onClick="logout()") Logout
 body
-    script(src='client.js')
-    div
-        include ../partials/header.pug
+    script(src="client.js")
+
+
 
     div.LoginContainer
         each val in results
