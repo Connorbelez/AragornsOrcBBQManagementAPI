@@ -82,17 +82,21 @@ function logout(){
 }
 
 function search() {
-    let searchObj = {
-        username: document.getElementById("userSearch").value
-    }
+    // let searchObj = {
+    //     username: document.getElementById("userSearch").value
+    // }
 
-    let req = new XMLHttpRequest();
-    req.onreadystatechange = function() {
-        if(req.readyState=== 4 && this.status === 200){
-            console.log("Search response recieved");
-        }
-    }
-    req.open("PUT",'/search');
-    req.setRequestHeader('Content-Type','application/JSON');
-    req.send(JSON.stringify(searchObj));
+    // let req = new XMLHttpRequest();
+    // req.onreadystatechange = function() {
+    //     if(req.readyState=== 4 && this.status === 200){
+    //         console.log("Search response recieved");
+    //         window.location.href = req.url;
+    //     }
+    // }
+    console.log('http://127.0.0.1:3000/search/?username='+document.getElementById("userSearch").value);
+    window.location.href = "http://127.0.0.1:3000/search?username="+document.getElementById("userSearch").value;
+    // req.open("GET",'http://127.0.0.1:3000/search/?username='+document.getElementById("userSearch").value);
+    // req.setRequestHeader('Content-Type','application/JSON');
+    // // req.send(JSON.stringify(searchObj));
+    // req.send();
 }

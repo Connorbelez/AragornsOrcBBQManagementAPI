@@ -215,23 +215,27 @@ app.get('/logout',(req,res)=>{
 });
 
 
-app.put('/search', function(req, res){
-    let query = req.body.username;
-    db.collection("users").find({username:{'$regex':query,'$options':'i' } }).toArray(function(err,result){
-        if(result.length >0){
+function handleSearch(req, res){
+    let userName = req.query.username;
+    db.collection("users").find({username:{'$regex':userName,'$options':'i' } }).toArray(function(err,result){
+        if(err) throw err;
+
         console.log("FOUND THE FOLLOWING:"+result[0].username+result[0]._id);
-        res.setHeader('Content-Type','text/html');
-        res.render("./pages/userResults",{results:result});
-        console.log("FOUND THE FOLLOWING: 2"+result[0].username+result[0]._id);
-        }
+        res.status(200).render("./pages/userResult",{results:result});
+
+
 
     });
 
+}
+
+app.get('/search:username?',handleSearch);
 
 
 
 
-})
+
+
 
 
 
