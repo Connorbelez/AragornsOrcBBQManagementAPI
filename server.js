@@ -264,17 +264,23 @@ app.get('/users/:userid',handleUser);
 
 app.get('/users:username?',handleSearch);
 
-function handleUser(req, res,next) {
+function handleUser(req, res,next) { //ToDO Chnage this back to userID
+    let oid;
+    try{
+        oid = new mongo.ObjectID(req.params.userid);
+    }catch{
+        res.status(404).send("Unknown ID!!");
+        return;
+    }
 
-
-    db.collection("users").findOne({username:req.params.userid},(err,result)=>{
+    db.collection("users").findOne({_id:oid},(err,result)=>{
 
         if(err) throw err;
         if(!result){
             res.status(404).send("Unknown ID!!");
             return;
         }
-        if(result.privacy === true && result.username != req.session.username){
+        if(result.privacy === true && result.username !== req.session.username){
             res.statusCode = 401;
             res.write("Not Authorized");
             response.end();
@@ -317,7 +323,7 @@ app.get('/user-profile',(req, res)=>{
             return;
         }
         let orderarray = result.orders;
-        console.log(orderarray); //ToDO: Adding showing order functionality!
+        console.log(orderarray);
         if(orderarray.length>0){
             console.log("Order Array"+orderarray[0]);
             console.log("Order Array at 0:"+JSON.stringify(orderarray[0]));

@@ -3,7 +3,7 @@
  Name        : client.js
  Author      : Connor Beleznay
  Version     : 3
- Description : A client side implmentation of web page that allows a user to 
+ Description : A client side implmentation of an order page that allows a user to
 			   browse menus for several restaurants, add items from a 
 			   restaurant to an order, and simulate placing an order
  ============================================================================

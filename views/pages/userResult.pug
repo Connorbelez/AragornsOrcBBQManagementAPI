@@ -15,4 +15,4 @@ body
     div.LoginContainer
         each val in results
             div.orderC
-                a(href=`http://127.0.0.1:3000/users/${val.username}`) #{val.username}
+                a(href=`http://127.0.0.1:3000/users/${val._id}`) #{val.username}
