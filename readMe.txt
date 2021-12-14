@@ -1,0 +1,1 @@
+Note: That your session id is linked to object id of the user you've logged in as. The object Ids are generated with when databaase-initializer.js is run, therefore if the server is resarted your current session ident will be depreciated and will not work.
