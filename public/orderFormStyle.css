@@ -8,7 +8,7 @@ html,
 * {box-sizing: border-box;}
 
 body { 
-background-image: url(images/maxresdefault.jpg);
+background-image: url(/images/maxresdefault.jpg);
 margin: 0;
 
 font-family: Arial, Helvetica, sans-serif;

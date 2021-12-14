@@ -98,7 +98,12 @@ function submitButtonClick(event) {
 			render();
 		}
 	}
-	req.open("POST","http://127.0.0.1:3000/checkout");
+
+	let restSelected = restaurants[0];
+	console.log("DEBUG: CUR SELECTION: "+restaurants[0].name);
+	console.log("RESTLIST:"+restaurants.length);
+
+	req.open("POST","http://127.0.0.1:3000/orders");
 	req.setRequestHeader("Content-Type", "application/json");
 
 	let cartlist = [];
@@ -110,8 +115,23 @@ function submitButtonClick(event) {
 		}
 		cartlist.push(cartItem);
 	}
+
+	let subtotal = 0;
+	cartlist.forEach(item => {
+		subtotal= subtotal + item.item.price*item.item.quantity;
+	});
+	let tax = 0.1*subtotal;
+	console.log("RESTNAME: "+restSelected.name);
+	console.log("RESTNAME: "+restSelected.name);
+	let total = tax+restSelected.delivery_fee+subtotal; //ToDo Error orgionating here, i think
+
 	let cartObj = {
-		total:total,
+		restID: restaurantSelection.value,
+		rest:restSelected.name,
+		deliveryFee:restSelected.delivery_fee,
+		subtotal:parseFloat(subtotal),
+		total:parseFloat(total),
+		tax:parseFloat(tax),
 		orders:cartlist,
 	}
 	let data = JSON.stringify(cartObj);
@@ -162,13 +182,14 @@ Return: void
 */
 
 function getCurrentSelection(event){
-	let curIndex = event.target.value; 
+	let curIndex = event.target.value;
 	currSelection = curIndex;
 	let req = new XMLHttpRequest();
 	req.onreadystatechange = function(){
 		if(req.readyState=== 4 && this.status === 200){
 
 			restaurants[0] = JSON.parse(req.responseText);
+
 			render(JSON.parse(req.responseText))
 		}
 	}

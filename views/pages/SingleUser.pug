@@ -1,0 +1,46 @@
+html
+    head
+        title User Profile 
+        style 
+            include ../../style.css
+
+body
+    //- script(src='client.js')
+    div
+        include ../partials/header.pug
+    div.LoginContainer
+        h3 #{results.username}
+        if orderHistory.length > 0
+            h3 Order History:
+            div.container
+                if orderHistory.length >0
+                    each order in orderHistory
+                        div.orderC
+                            h3 Restaurant: #{order.order.rest}
+                            h5 sub-total: $#{order.order.subtotal.toFixed(2)}
+                            h5 tax: $#{order.order.tax.toFixed(2)}
+                            h5 deliver fee: $#{order.order.deliveryFee.toFixed(2)}
+                            h5 Total: $#{order.order.total.toFixed(2)}
+                            h3 Orders:
+                            each item in order.order.orders
+                                h5 #{item.item.quantity} x #{item.name}
+        else
+            p No order history
+
+        if sameUser
+            div.container
+                form
+                    h3 Privacy Settings:
+                    if results.privacy 
+                        h4 Current: Private
+                    else
+                        h4 Current: Public  
+
+                    input(type="radio" name="privacySettings" id='setToPrivate' value='private')
+                    label Private
+                    br
+ 
+                    input(type="radio" name="privacySettings" id='setToPublic' value='public')
+                    label Public 
+                    br
+                    button(class="myBtn" onclick="SubmitPrivacy()") Submit Changes

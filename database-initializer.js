@@ -6,6 +6,7 @@ userNames.forEach(name =>{
 	u.username = name;
 	u.password = name;
 	u.privacy = false;
+	u.orders=[];
 	users.push(u);
 });
 

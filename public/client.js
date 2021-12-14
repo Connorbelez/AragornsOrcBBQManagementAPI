@@ -93,10 +93,38 @@ function search() {
     //         window.location.href = req.url;
     //     }
     // }
-    console.log('http://127.0.0.1:3000/search/?username='+document.getElementById("userSearch").value);
-    window.location.href = "http://127.0.0.1:3000/search?username="+document.getElementById("userSearch").value;
+    console.log('http://127.0.0.1:3000/users?username='+document.getElementById("userSearch").value);
+    window.location.href = "http://127.0.0.1:3000/users?username="+document.getElementById("userSearch").value;
     // req.open("GET",'http://127.0.0.1:3000/search/?username='+document.getElementById("userSearch").value);
     // req.setRequestHeader('Content-Type','application/JSON');
     // // req.send(JSON.stringify(searchObj));
     // req.send();
+}
+
+function SubmitPrivacy(){
+    let req = new XMLHttpRequest();
+    req.onreadystatechange = function() {
+        if(req.readyState=== 4 && this.status === 200){
+            alert("Updated Privacy Settings");
+            // window.location.href = window.location.href;
+        }
+    }
+    let public = document.getElementById('setToPublic').checked;
+    let private = document.getElementById('setToPrivate').checked;
+    console.log("SELECTED PRIVACY SETTINGS: Public:"+public+" PRIVATE: "+private);
+    if(public){
+        let privacyInfo = {private:false,public:true};
+        req.open("PUT",'/privacySettings');
+        console.log("Setting to public!!");
+        req.setRequestHeader('Content-Type','application/JSON');
+        req.send(JSON.stringify(privacyInfo));
+
+    }
+    if(private){
+            let privacyInfo = {private:true,public:false};
+            req.open("PUT",'/privacySettings');
+            console.log("Setting to Private!!");
+            req.setRequestHeader('Content-Type','application/JSON');
+            req.send(JSON.stringify(privacyInfo));
+    }
 }

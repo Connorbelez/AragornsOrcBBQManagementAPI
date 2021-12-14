@@ -31,6 +31,7 @@ let app = express();
 
 let mongo = require('mongodb');
 const e = require('express');
+const { syncBuiltinESMExports } = require('module');
 let MongoClient = mongo.MongoClient;
 let db;
 
@@ -66,6 +67,23 @@ app.use(session({secret:"some secret here",store:mongoStore}));
 // const admin = new Users({userName:"Connor",password:"123",orders:map1,private:false});
 
 // admin.save();
+// app.get('/search/images/maxresdefault.jpg',(req, res, next) => {
+//     req.url = '/images/maxresdefault.jpg';
+//     console.log('revised URL!!!');
+//     next();
+// })
+
+// app.get('/search/client.js',(req, res, next) => {
+//     req.url = 'client.js';
+//     console.log('revised JS URL!!!');
+//     next();
+// })
+
+// app.get('/search/images/maxresdefault.jpg',(req, res, next) => {
+//     req.url = '/images/maxresdefault.jpg';
+//     console.log('revised URL!!!');
+//     next();
+// })
 
 app.use(express.static("public"));
 app.set('view engine','pug')
@@ -73,11 +91,13 @@ app.set('view engine','pug')
 //Start adding route handlers here
 app.use(express.json());
 
-app.get(['/','/home'],(req, res)=>{
+
+app.get(['/','/home'],(req, res,next)=>{
     res.statusCode = 200;
     res.setHeader('Content-Type','text/html');
     // req.session.LoggedIn = true; // use this line in the login page
     console.log("Logged in: "+ req.session.LoggedIn);
+    console.log("session id at login:"+req.session.ident);
     res.render("./pages/home",{home:true,loggedin:req.session.LoggedIn}) //also send true of false if the user is logged in or not
 })
 
@@ -91,19 +111,16 @@ app.get(["/orderForm"],(req,res)=>{
 
 app.get('/login',(req,res)=>{
 
-
-
     res.statusCode = 200;
     res.setHeader('Content-Type','text/html');
     res.render("./pages/login",{login:true})
 })
 
-
-
-
-
-
-
+app.get('/users/admin',(req,res) => {
+    res.statusCode = 200;
+    res.setHeader('Content-Type','text/html');
+    res.render("./pages/home",{home:true})
+})
 
 
 
@@ -144,14 +161,14 @@ app.put('/login',(request,response)=>{
             return;
         }
 
+        console.log("User found: " + result.username);
+        console.log("With ID: " + result._id);
+
         if(pw === result.password){
             console.log("Loggin successful!");
             response.status(200);
             request.session.LoggedIn = true; // use this line in the login page
-            request.session.username = UserName;
-            request.session.id = result._id;
-
-            // console.log("1 document inserted with ID:"+newUser._id);
+            request.session.username = result.username;
             response.end()
         }else{
             //Send login unsucessful message back to client
@@ -178,13 +195,14 @@ app.put('/register',(req,res)=>{
                 username:UserName,
                 password:pw,
                 privacy:false,
+                orders:[]
             };
             db.collection("users").insertOne(newUser,(err,result)=>{
                 if (err) throw err;
                 req.session.LoggedIn = true;
                 req.session.id = newUser._id;
+                req.session.username = UserName;
 
-                console.log("1 document inserted with ID:"+newUser._id);
                 res.status(200);
                 res.end();
             })
@@ -197,31 +215,43 @@ app.put('/register',(req,res)=>{
 
 
 })
-app.get('/users', (req,res)=>{
+app.get('/userRegistry', (req,res)=>{
     res.statusCode = 200;
     res.setHeader('Content-Type','text/html');
-    // req.session.LoggedIn = true; // use this line in the login page
     console.log("LOGGED IN?"+req.session.LoggedIn);
-    res.render("./pages/users",{users:true,loggedin:req.session.LoggedIn});
+    res.render("./pages/userRegistry",{users:true,loggedin:req.session.LoggedIn});
 });
 
 app.get('/logout',(req,res)=>{
 
     req.session.LoggedIn = false;
-    req.session.id = null;
+    req.session.ident = null;
+    req.session.userName = null;
 
     console.log("LOGGED OUT");
     res.end();
 });
 
 
-function handleSearch(req, res){
+function handleSearch(req, res,next){
+    console.log("Got 220");
     let userName = req.query.username;
-    db.collection("users").find({username:{'$regex':userName,'$options':'i' } }).toArray(function(err,result){
+    let queryList = [];
+    queryList.push({privacy:false});
+    if(userName){ 
+        queryList.push({username:{'$regex':userName,'$options':'i' } }) 
+    };
+    let searchObj = {$and:queryList };
+    db.collection("users").find(searchObj)
+    .toArray(function(err,result){
         if(err) throw err;
+        console.log("Executing multi-userSearch");
+        if(!result){
+            res.status(404).send("Unknown ID!!");
+            return;
+        }
 
-        // console.log("FOUND THE FOLLOWING:"+result[0].username+result[0]._id);
-        res.status(200).render("./pages/userResult",{results:result,loggedin:req.session.LoggedIn});
+        res.status(200).render("./pages/userResult",{users:true,results:result,loggedin:req.session.LoggedIn});
 
 
 
@@ -229,8 +259,108 @@ function handleSearch(req, res){
 
 }
 
-app.get('/search:username?',handleSearch);
 
+app.get('/users/:userid',handleUser);
+
+app.get('/users:username?',handleSearch);
+
+function handleUser(req, res,next) {
+
+
+    db.collection("users").findOne({username:req.params.userid},(err,result)=>{
+
+        if(err) throw err;
+        if(!result){
+            res.status(404).send("Unknown ID!!");
+            return;
+        }
+        if(result.privacy === true && result.username != req.session.username){
+            res.statusCode = 401;
+            res.write("Not Authorized");
+            response.end();
+            return;
+        }
+        console.log("RESULT: "+result);
+        let orderarray = result.orders;
+        console.log("SESSION USERNAME AT FIND USER: "+req.session.username);
+        console.log("SESSION LOGIN STATUS AT FIND USER: "+req.session.LoggedIn);
+        if(result.username === req.session.username && req.session.LoggedIn){
+            res.status(200).render("./pages/SingleUser",{orderHistory:orderarray,results:result,loggedin:req.session.LoggedIn,sameUser:true,users:true});
+        }else{
+            res.status(200).render("./pages/SingleUser",{orderHistory:orderarray,results:result,loggedin:req.session.LoggedIn,sameUser:false,users:true});
+        }
+    })
+}
+
+app.get('/user-profile',(req, res)=>{
+    // let oid =req.session.ident;
+    // let oid;
+	// try{
+	// 	oid = new mongo.ObjectID(req.session.ident);
+	// }catch{
+	// 	res.status(404).send("Unknown ID!!");
+	// 	return;
+	// }
+    // console.log("session ident going into user-profile: "+req.session.ident);
+
+    db.collection("users").findOne({username:req.session.username},(err,result)=>{
+        console.log("RESULT: "+ result);
+        if(!result){
+            res.status(404).send("Unknown ID!!");
+            return;
+        }
+        if(err) throw err;
+        if(result.privacy === true && result.username != req.session.username){
+            res.statusCode = 401;
+            res.write("Not Authorized");
+            response.end();
+            return;
+        }
+        let orderarray = result.orders;
+        console.log(orderarray); //ToDO: Adding showing order functionality!
+        if(orderarray.length>0){
+            console.log("Order Array"+orderarray[0]);
+            console.log("Order Array at 0:"+JSON.stringify(orderarray[0]));
+            console.log("Order Array at 0:"+JSON.stringify(orderarray[0].username));
+        }
+        res.status(200).render("./pages/SingleUser",{profile:true,orderHistory:orderarray,results:result,loggedin:req.session.LoggedIn,sameUser:true});
+    });
+}) //gets profile user is logged into
+
+
+
+app.put('/privacySettings',(req,res)=>{
+    if(req.session.LoggedIn){
+        db.collection('users').updateOne(
+            {username:req.session.username},
+            {$set: {privacy:req.body.private}},
+            (err,result)=>{
+                if (err) throw err;
+                console.log("1 document updated");
+            }
+        )
+    }
+    res.end()
+})
+
+app.post('/orders',(req,res)=>{
+    console.log(JSON.stringify(req.body));
+
+    let orderObj = {order: req.body, username:req.session.username};
+
+    db.collection("orders")
+    .insertOne(orderObj,(err,result)=>{
+        db.collection('users')
+        .updateOne(
+            {username:req.session.username},
+            {$push:{orders:orderObj}} //Maybe switch this out with orderObj "$ref":"orders","$id":result._id,"$db":"a4"
+        );
+    
+    })
+    
+
+    res.end()
+})
 
 
 
