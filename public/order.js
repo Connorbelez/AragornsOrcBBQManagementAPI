@@ -1,6 +1,6 @@
 /*
  ============================================================================
- Name        : client.js
+ Name        : order.js
  Author      : Connor Beleznay
  Version     : 3
  Description : A client side implmentation of an order page that allows a user to
@@ -80,12 +80,13 @@ Function: submitButtonClick()
 Description: Event handler for the event generated when clicking the submit order button. 
 			Iterates over each item in the cart map, creating an object with each items name
 			and information(quantity, price) and adds each object to an arry, then generates
-			another object holding the array, and the total for the order which is then sent
-			via an Ajax POST request to the server. Finally it creates an alert, clears the 
-			cart and renders the page with updated info, 
+			another object holding the array, as well as the restaurant info, total, subtotal etc
+ 			which is then sent via an Ajax POST request to the server. Finally it creates an alert,
+ 			clears the cart and renders the page with updated info,
 			
 			
-Local Variables: None
+Local Variables: restSelected: get the item at the front of the resaurants list, this list is updated
+ by the function getCurrentSelection(), cartObj is the objct that is built and sent to the server
 Return: void
 */
 
@@ -123,7 +124,7 @@ function submitButtonClick(event) {
 	let tax = 0.1*subtotal;
 	console.log("RESTNAME: "+restSelected.name);
 	console.log("RESTNAME: "+restSelected.name);
-	let total = tax+restSelected.delivery_fee+subtotal; //ToDo Error orgionating here, i think
+	let total = tax+restSelected.delivery_fee+subtotal;
 
 	let cartObj = {
 		restID: restaurantSelection.value,
@@ -456,11 +457,11 @@ function renderCart(){
 		  buyButton.disabled=0;
 	  }else{
 		  cartContainer.appendChild(amountRemaining);
-	  };
+	  }
 	  //only show the submit button if theres at least one item in the cart. 
 	  if(cart.size>0){
 	  cartContainer.appendChild(buyButton);
-	  };
+	  }
 
 }
 

@@ -1,0 +1,23 @@
+html
+    head
+        title User Profile
+        style
+            include ../../style.css
+
+body
+    //- script(src='client.js')
+    div
+        include ../partials/header.pug
+
+    div.LoginContainer
+        h3 Order: #{orderSummary._id}
+        div.orderC
+            h3 Restaurant: #{orderSummary.order.rest}
+            h5 sub-total: $#{orderSummary.order.subtotal.toFixed(2)}
+            h5 tax: $#{orderSummary.order.tax.toFixed(2)}
+            h5 deliver fee: $#{orderSummary.order.deliveryFee.toFixed(2)}
+            h5 Total: $#{orderSummary.order.total.toFixed(2)}
+            h3 Orders:
+            each item in orderSummary.order.orders
+                h5 #{item.item.quantity} x #{item.name}
+            h4 Ordered by #{orderSummary.username}
